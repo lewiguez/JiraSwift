@@ -20,6 +20,30 @@ public class JiraClient: APIClient {
         return df
     }
 
+	static var dateNoTimeFormatter: DateFormatter {
+		let df = DateFormatter()
+		df.dateFormat = "yyyy-MM-dd"
+		return df
+	}
+
+	static var decodingStrategy: JSONDecoder.DateDecodingStrategy = .custom { (decoder) -> Date in
+		let container = try decoder.singleValueContainer()
+		let dateStr = try container.decode(String.self)
+	
+		// possible date strings: "2021-05-01",  "2021-07-04T17:37:21.119229Z", "2021-05-20T15:00:00Z"
+		let len = dateStr.count
+		var date: Date? = nil
+		if len < 14 {
+			date = dateNoTimeFormatter.date(from: dateStr)
+		} else {
+			date = dateFormatter.date(from: dateStr)
+		}
+		guard let _date = date else {
+			throw DecodingError.dataCorruptedError(in: container, debugDescription: "Cannot decode date string \(dateStr)")
+		}
+		return _date
+	}    
+
     public var myself: MyselfRoutes!
     public var project: ProjectRoutes!
     public var serverInfo: ServerInfoRoutes!
@@ -45,7 +69,7 @@ public class JiraClient: APIClient {
 
     private func initialize() {
         (handler as? DefaultAPIRouteHandler)?.encoder.dateEncodingStrategy = .formatted(JiraClient.dateFormatter)
-        (handler as? DefaultAPIRouteHandler)?.decoder.dateDecodingStrategy = .formatted(JiraClient.dateFormatter)
+        (handler as? DefaultAPIRouteHandler)?.decoder.dateDecodingStrategy = decodingStrategy
 
         myself = router(MyselfRoutes.self)
         project = router(ProjectRoutes.self)
