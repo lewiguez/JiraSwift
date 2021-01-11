@@ -41,6 +41,7 @@ public struct Fields: Codable {
     public var versions: [Version]?
     public var fixVersions: [Version]?
     public var priority: Priority?
+    public var issuelinks: [IssueLink]?
 
 }
 
@@ -120,4 +121,23 @@ public struct Priority: Codable {
     public var name: String
     public var iconUrl: String
 
+}
+
+
+public struct IssueLink: Codable {
+
+	public var id: String
+	public var `self`: String
+	public var type: IssueLinkType
+	public var inwardIssue: Issue
+}
+
+
+public struct IssueLinkType: Codable {
+
+	public var id: String
+	public var `self`: String
+	public var name: String
+	public var outward: String
+	public var inward: String
 }
