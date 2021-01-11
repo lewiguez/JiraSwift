@@ -69,7 +69,7 @@ public class JiraClient: APIClient {
 
     private func initialize() {
         (handler as? DefaultAPIRouteHandler)?.encoder.dateEncodingStrategy = .formatted(JiraClient.dateFormatter)
-        (handler as? DefaultAPIRouteHandler)?.decoder.dateDecodingStrategy = decodingStrategy
+        (handler as? DefaultAPIRouteHandler)?.decoder.dateDecodingStrategy = JiraClient.decodingStrategy
 
         myself = router(MyselfRoutes.self)
         project = router(ProjectRoutes.self)
